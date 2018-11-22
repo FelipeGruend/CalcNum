@@ -3,7 +3,7 @@ import numpy as np
 from numpy import linalg
 
 # Ajuste polinomial
-def fitpolinomial(xi, yi, degree):
+def fitpolynomial(xi, yi, degree):
   # Testa se existe quantidades iguais de valores x e y para os pontos
   if len(xi) != len(yi):
       raise NameError('Sizes of x and y coordinates does not fit')
@@ -17,17 +17,12 @@ def fitpolinomial(xi, yi, degree):
   V = np.array(V).transpose()
   a = ((np.linalg.inv((V.transpose()).dot(V))).dot(V.transpose())).dot(yi)
 
-# Cria a linha da funcao e plota
-  xx = np.linspace(xi[0], xi[-1])
-  plt.plot(xi,yi,'ro',xx,np.polyval(a,xx),'b-')  
-  plt.grid();plt.show()
-
   # Cria uma lista e para cada valor em xi calcula o polinomio encontrado e adiciona a lista
-  results = []
+  result = []
   for value in xi:
-      results.append(np.polyval(a,value))
+      result.append(np.polyval(a,value))
 
-  return results
+  return result, a
 
 
 def fitexponencial(xi, yi):
@@ -41,27 +36,34 @@ def fitexponencial(xi, yi):
   A = np.exp(a[0])  
   b = a[1]
 
-  # Cria a linha da funcao e plota usando a Ae^(b*x)
-  xx = np.linspace(xi[0], xi[-1])  
-  plt.plot(xi,yi,'ro',xx, A * np.exp(b*xx),'g-')  
-  plt.grid();plt.show()
-
-  # Cria uma lista e para cada valor em xi calcula o polinomio encontrado e adiciona a lista usando
+  # Cria uma lista e para cada valor em xi calcula o polinomio encontrado e adiciona a lista usand
   # Ae^(b*x)
-  results = []
+  result = []
   for value in xi:
-      results.append(A * np.exp(b*value))
+      result.append(A * np.exp(b*value))
 
-  return results
+  return result, A, b
 
-  
-def variancy(x, x1):
-  if len(x) != len(x1):
+
+def variancy(x, fx):
+  if len(x) != len(fx):
       raise NameError('Sizes of x and x1 does not fit')
 
   v = 0
   # Calcula o erro medio quadratico para cada ponto
   for i in range(len(x)):
-      v = v + ((x1[i] - x[i])**2)
+      v = v + ((fx[i] - x[i])**2)
 
   return v
+
+def predictpolynomial(x, polynomial):
+  y = []
+  y.append(np.polyval(polynomial, x))
+
+  return y
+  
+def predictexponencial(x, A, b):
+  y = []
+  y.append(A * np.exp(b*x))
+
+  return y
